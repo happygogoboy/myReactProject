@@ -4,7 +4,8 @@ import './style.scss'
 import { Layout } from 'antd';
 
 import TopNav from '../TopNav';
-const {  Sider, Content } = Layout;
+import SiderNav from '../AsideNav';
+const {   Content } = Layout;
 
 const LayoutAll =()=>{
 
@@ -14,7 +15,7 @@ const LayoutAll =()=>{
               <Layout>
                   <TopNav></TopNav>
                   <Layout>
-                      <Sider>Sider</Sider>
+                      <SiderNav>Sider</SiderNav>
                       <Content><Outlet/></Content>
                   </Layout>
               </Layout>

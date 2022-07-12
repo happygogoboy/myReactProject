@@ -1,0 +1,15 @@
+.buildBox {
+    padding: 40px;
+
+    >h1 {
+        background-color: white;
+        display: flex;
+
+        >span {
+            display: block;
+            width: 3px;
+            margin-right: 10px;
+            background-color: gray;
+        }
+    }
+}

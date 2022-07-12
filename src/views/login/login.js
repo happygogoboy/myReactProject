@@ -1,13 +1,18 @@
-import { Component} from 'react'
+
 import './style.scss'
+import { Button, Checkbox, Form, Input } from 'antd';
 
-class Login extends Component{
+const Login =()=>{
 
-    render(){
+    
         return(
-            <div>我是login组件</div>
+            <div className='loginBox'>
+
+                    <Input placeholder='请输入账号' type='text'></Input>
+                    <Input placeholder='请输入密码' type='password'></Input>
+                    <Button type='primary'>登录</Button>
+            </div>
         )
-    }
 }
 
 export default Login

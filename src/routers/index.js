@@ -4,6 +4,8 @@ import Login from '../views/login/login'
 import Layout from '../components/layout/index'
 import Home from '../views/home/home'
 import Room from '../views/room/room'
+import SetBuild from '../views/build/build'
+import RoomType from '../views/roomType/roomType'
 
 
 
@@ -16,6 +18,8 @@ const framOut = [
 const framIn = [
         {path:'index',element:<Home/>},
         {path:'room',element:<Room/>},
+        {path:'setBuild',element:<SetBuild/>},
+        {path:'setFloor',element:<RoomType/>},
         {path:'*',element:<Navigate to="/index" />}
         
 ]

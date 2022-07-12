@@ -20,11 +20,14 @@ export const commonSlice = createSlice({
        setMenu(state,action){   // state当前的状态的值  第二个参数就是action
             state.menu = action.payload
        },
+       setCurMenu(state,action){
+            state.curMenu = action.payload
+       }
   },
 })
 
 // Action creators are generated for each case reducer function
 // 根据reducer里面声明的函数生成对应的同名的action Createor 
-export const {setAdminInfo  } = commonSlice.actions
+export const {setMenu,setCurMenu} = commonSlice.actions
 
 export default commonSlice.reducer
