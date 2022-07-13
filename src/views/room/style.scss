@@ -1,5 +1,6 @@
-.roomTypeBox {
+.roomBox {
     padding: 40px;
+    height: 100%;
 
     >h1 {
         background-color: white;
@@ -10,6 +11,16 @@
             width: 3px;
             margin-right: 10px;
             background-color: gray;
+        }
+    }
+
+    .addMiniBox {
+        margin: 20px 0;
+        display: flex;
+
+        Input {
+            width: 200px;
+            margin-left: 5px;
         }
     }
 

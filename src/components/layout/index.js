@@ -1,4 +1,3 @@
-
 import {Outlet} from 'react-router-dom'
 import './style.scss'
 import { Layout } from 'antd';
@@ -24,7 +23,7 @@ const LayoutAll =()=>{
                   <TopNav></TopNav>
                   <Layout>
                       <SiderNav>Sider</SiderNav>
-                      <Content><Outlet/></Content>
+                      <Content className='contentBox'><Outlet/></Content>
                   </Layout>
               </Layout>
              
