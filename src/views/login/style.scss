@@ -4,19 +4,18 @@ body,
     height: 100%;
 }
 
-#root {
+.loginBg {
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: url(../../assets/loginbg.webp) center center no-repeat;
+    background-size: cover;
 }
 
 .loginBox {
     width: 400px;
-
-    background-color: rgb(156, 160, 238);
+    background: rgb(156, 160, 238, 0.6);
     padding: 40px;
 
-    &>Input {
-        margin-bottom: 30px;
-    }
 }

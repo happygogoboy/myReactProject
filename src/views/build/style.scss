@@ -13,3 +13,17 @@
         }
     }
 }
+
+.addFloofBox {
+    width: 200px;
+    padding: 10px;
+
+    &>div {
+        text-align: center;
+        border: 1px solid gray;
+    }
+}
+
+.active {
+    background-color: green;
+}
