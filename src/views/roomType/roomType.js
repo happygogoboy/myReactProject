@@ -162,12 +162,12 @@ const Roomtype = ()=>{
           key: 'handle',
           render:(_,record)=>(
                 <div>
-                    <Button type='danger' style={{marginRight:'5px'}}  onClick={()=>{
+                    <Button type='danger' size="small" style={{marginRight:'5px'}}  onClick={()=>{
                         console.log(record._id);
                         setTypeId(record._id)
                         setShowDelModel(true)
                     }}>删除</Button>
-                    <Button type='primary' onClick={()=>{
+                    <Button type='primary' size="small"  onClick={()=>{
                         openEditDrawer(record)
                     }}>编辑</Button>
                 </div>
@@ -207,8 +207,10 @@ const Roomtype = ()=>{
         setTypeList(record)
         setTimeout(()=>{
             console.log('rrrrr',record)
+            console.log('editRef',editRef)
+
             editRef.current.setFieldsValue({
-                ...{liveLimit,...record},
+                ...record,
                 liveLimit:moment(record.liveLimit)
             })
             setName(record.name)

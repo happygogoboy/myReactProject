@@ -20,10 +20,11 @@ const framOut = [
 //功能页面
 const framIn = [
         {path:'index',element:<Home/>},
+        {path:'set',element:<Navigate to="/setBuild" />},
         {path:'setRoom',element:<Room/>},
         {path:'setBuild',element:<SetBuild/>},
         {path:'setFloor',element:<RoomType/>},
-        {path:'*',element:<Navigate to="/index" />}
+        {path:'*',element:<Navigate to="/index" />},
         
 ]
 

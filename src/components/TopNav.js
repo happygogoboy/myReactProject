@@ -10,6 +10,7 @@ const { Header } = Layout;
 const TopNav = ()=>{
     const store = useSelector(state=>state)
     const menu = store.common.menu
+    console.log('menu',menu);
     const curMenu = store.common.curMenu
     const dispatch = useDispatch()
     const items1 = menu.map((key,index) => ({
@@ -18,6 +19,7 @@ const TopNav = ()=>{
         url:key.url
       }));
 
+    console.log(items1,'items1')
     const navigate = useNavigate()
 
     const handleSelect = (item,key)=>{
@@ -31,8 +33,13 @@ const TopNav = ()=>{
     },[curMenu])
     return(
         <Header>
-            <div className="logo" />
-             <Menu theme="dark" mode="horizontal" items={items1} selectedKeys onSelect={(item,key)=>{
+            <div className="logo"> </div>
+             <Menu theme="dark" 
+             mode="horizontal" 
+             items={items1} 
+             selectedKeys 
+             defaultSelectedKeys={[1]}
+             onSelect={(item,key)=>{
                 handleSelect(item,key)
              }} />
         </Header>
