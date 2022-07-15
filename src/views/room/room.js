@@ -5,65 +5,28 @@ import {addRoom,getAllRoom,delRoom,editRoom} from '../../api/room'
 import {getAllBuild} from '../../api/build'
 import {getAllRoomtype} from '../../api/roomType'
 import { useForm } from 'antd/lib/form/Form';
+// 导入刚才封装好的 excel表格导出的公共函数
+import exportXLS from "../../util/exportXLS";
 
-import moment  from 'moment'
+
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-const options = [
-    {
-      value: 'zhejiang',
-      label: 'Zhejiang',
-      children: [
-        {
-          value: 'hangzhou',
-          label: 'Hangzhou',
-        },
-      ],
-    },
-    {
-      value: 'jiangsu',
-      label: 'Jiangsu',
-      children: [
-        {
-          value: 'nanjing',
-          label: 'Nanjing',
-        },
-      ],
-    },
-  ];
 
-
-  const gogo =[
-    {value:123,label:123,childern:[
-                {value:987,
-                label:987}
-                        ]},
-    {value:123,label:123,childern:[
-                {value:987,
-                label:987}
-                        ]}
-    ]
 const Room = ()=>{
     //获取所有楼栋信息为联级选择器提供数组 start
     const [buildIdArr,setbuildIdArr] = useState([])
+
     const doGetAllBuild = async ()=>{
         let res = await getAllBuild()        
-        const tempArr = []
-        res.data?.map(item=>{
-            const tempObj=
-                {
-                    value:item.name,
-                    label:item.name,
-                    children:
-                        item.floorInfo.map(it=>({
+        const tempArr = res.data.map(item=>({
+                        value:item.name,
+                        label:item.name,
+                        children:item.floorInfo.map(it=>({
                             value:it,
                             label:it
-                        })                           
-                        )
-                    
-                }
-                tempArr.push(tempObj)
-        })
+                        }))           
+        }))
         setbuildIdArr(tempArr)
     }
 
@@ -158,40 +121,44 @@ const Room = ()=>{
         if(buildIdArr)setbuildId(buildIdArr[0])
         
     },[typeArr,buildIdArr])
-    const clearAddIpt = ()=>{
-        setbuildId('')
-        setFloor('')
-        setFloor('')
-        setType('')
-        setRoomName('')
-        setPhone4in('')
-        setPhone4out('')
-        setDirection('')
-        setIsClose2Road('')
-        sethasWindow('')
-        setIsSmoke('')
-        setIsNoise('')
-        setIsHigh('')
-        setSthIntheroom('')
-    }
+    // const clearAddIpt = ()=>{
+    //     setbuildId('')
+    //     setFloor('')
+    //     setFloor('')
+    //     setType('')
+    //     setRoomName('')
+    //     setPhone4in('')
+    //     setPhone4out('')
+    //     setDirection('')
+    //     setIsClose2Road('')
+    //     sethasWindow('')
+    //     setIsSmoke('')
+    //     setIsNoise('')
+    //     setIsHigh('')
+    //     setSthIntheroom('')
+    // }
     //添加房间信息的抽屉相关 end
 
     //执行添加房间 start
 
     
     const doAddRoom = async ()=>{
+        
         const values = addForm.current.getFieldsValue(true);
+        console.log(values)
+        const {bandf,...postData} = values
+        const [builiId,floor] = bandf
         let res = await addRoom({
-            buildId,
-            floor,
-            type,
-            direction,
-            isClose2Road,
-            hasWindow,
-            isSmoke,
-            isNoise,
             isHigh,
-            ...values,
+            isNoise,
+            isSmoke,
+            hasWindow,
+            isClose2Road,
+            direction,
+            type,
+            builiId,
+            floor,
+            ...postData
         })
         const {success} = res
         if(!success) return message.info('添加失败')
@@ -327,19 +294,28 @@ const Room = ()=>{
           key: 'handle',
           render:(_,record)=>(
                 <div>
-                    <Button type='danger' size="small" style={{marginRight:'5px'}}  onClick={()=>{
-                        console.log('record',record);
-                        setId(record._id)
-                        setShowDelModel(true)
-                    }}>删除</Button>
-                    <Button type='primary' size="small" onClick={()=>{
-                        openEditDrawer(record)
-                    }}>编辑</Button>
+                    <Button 
+                        type='danger' 
+                        size="small" 
+                        style={{marginRight:'5px'}}  
+                        onClick={()=>{
+                            console.log('record',record);
+                            setId(record._id)
+                            setShowDelModel(true)
+                        }}>删除</Button>
+
+                    <Button 
+                        type='primary' 
+                        size="small" 
+                        onClick={()=>{
+                            openEditDrawer(record)
+                        }}>编辑</Button>
                 </div>
           )
           }
     ]
         //table的设置 end 
+
     //执行查询所有且table的设置 end
 
     //删除单个房间操作 start
@@ -369,18 +345,15 @@ const Room = ()=>{
 
     //打开编辑抽屉的函数
     const openEditDrawer=(record)=>{
+      
         setEditDrawer(true)
         setId(record._id)
-        setbuildId(record.buildId)
-        setFloor(record.floor)
-        console.log(record);
         setTimeout(()=>{
             console.log('rrrrr',record)
             editRef.current.setFieldsValue({
                 ...record,
-                floor:[buildId,floor]
-            })
-            
+                bandf:[record.buildId,record.floor]
+            })           
         },300)
        
     }
@@ -390,9 +363,16 @@ const Room = ()=>{
     const doEditRoom = async ()=>{
 
         const values = editRef.current.getFieldsValue(true)
+        console.log('values,values++++++++++++++',values);
+        const {bandf,...postData} = values
+        const [buildId,floor] = bandf
+        console.log('values',values)
+        console.log('Id',Id)
         let res = await editRoom({
             roomid:Id,
-            ...values
+            buildId,
+            floor,
+            ...postData
         })
         const {success} = res
         if(!success) return message.info('修改失败')
@@ -417,7 +397,26 @@ const Room = ()=>{
                  <Input placeholder='通过房间类型查询'
                  onChange={(ev)=>setSearchType(ev.target.value)}
                  ></Input>
-                 <Button onClick={doGetAllRoom}>点击查询</Button>
+                 <Button onClick={doGetAllRoom} style={{margin:'0 5px'}}>点击查询</Button>
+                 <Button onClick={()=>{
+                    const outPutData = [
+                        ['楼层','房型','房间名','内线电话','朝向'],
+                        ...roomList.map(item=>([
+                            item.floor,
+                            item.type,
+                            item.roomName,
+                            item.phone4in,
+                            // item.direction
+                            (()=>{
+                                if(item.direction===1)return'东'
+                                if(item.direction===2)return'南'
+                                if(item.direction===3)return'西'
+                                if(item.direction===4)return'北'
+                            })()
+                        ]))
+                    ]
+                    exportXLS({filename:'房间列表',data:outPutData})
+                 }}>导出表格</Button>
             </div>
             
             {/* 渲染的表格 start*/}
@@ -437,6 +436,9 @@ const Room = ()=>{
                 pageSize={limit} 
                 pageSizeOptions={[4, 10, 20, 30]} 
                 showSizeChanger
+                showTotal={
+                    (total)=>('总计'+total+'条数据')
+                    }
                 onChange={(page,pageSize)=>{
                     if(page)setPage(page)
                     setLimit(pageSize)
@@ -446,29 +448,34 @@ const Room = ()=>{
             
 
             {/* 添加的抽屉 start*/}
-            <Drawer className='drawer' title="添加房间" placement="right" onClose={closeAddDrawer} visible={addDrawer}>
+            <Drawer 
+                className='drawer' 
+                title="添加房间" 
+                placement="right" 
+                onClose={closeAddDrawer} 
+                visible={addDrawer}>
             <Form
-             labelCol={{ span: 6 }}
-             wrapperCol={{ span: 18 }}
-             ref={addForm}
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                ref={addForm}
             >
 
                 <Form.Item label="楼栋楼层" name="bandf">
                     <Cascader  
-                    options={buildIdArr} 
-                    placeholder="请选择楼栋楼层" 
-                    onChange={(value)=>{
-                        console.log('value',value)
-                        setbuildId(value[0])
-                        setFloor(value[1])
-                    }}
+                        options={buildIdArr} 
+                        placeholder="请选择楼栋楼层" 
+                        onChange={(value)=>{
+                            console.log('value',value)
+                            setbuildId(value[0])
+                            setFloor(value[1])
+                        }}
                     ></Cascader>
                 </Form.Item>
                 
                 <Form.Item
-                label="房型"
-                name="type"
-                rules={[{ required: true, message: '请选择房型!' }]}
+                    label="房型"
+                    name="type"
+                    rules={[{ required: true, message: '请选择房型!' }]}
                 >
                     <Select 
                         style={{
@@ -482,33 +489,44 @@ const Room = ()=>{
                 </Form.Item>
                 
                 <Form.Item
-                label="房间名"
-                name="roomName"
-                rules={[{ required: true, message: '请填写房间名' }]}
+                    label="房间名"
+                    name="roomName"
+                    rules={[{ required: true, message: '请填写房间名' }]}
                 >
-                    <Input placeholder='请填写房间名' onChange={(ev)=>{setRoomName(ev.target.value)}} value={roomName}></Input>
+                    <Input 
+                        placeholder='请填写房间名' 
+                        onChange={(ev)=>{setRoomName(ev.target.value)}} 
+                        value={roomName}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                label="内线电话"
-                name="phone4in"
+                    label="内线电话"
+                    name="phone4in"
                 >
-                    <Input placeholder='请输入内线电话' onChange={(ev)=>{setPhone4in(ev.target.value)}} value={phone4in}></Input>
+                    <Input 
+                        placeholder='请输入内线电话' 
+                        onChange={(ev)=>{setPhone4in(ev.target.value)}} 
+                        value={phone4in}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                label="外线电话"
-                name="phone4out"
+                    label="外线电话"
+                    name="phone4out"
                 >
-                    <Input placeholder='请输入外线电话' onChange={(ev)=>{setPhone4out(ev.target.value)}} value={phone4out}></Input>                 
+                    <Input 
+                        placeholder='请输入外线电话' 
+                        onChange={(ev)=>{setPhone4out(ev.target.value)}} 
+                        value={phone4out}
+                    />               
                 </Form.Item>
 
                 <Form.Item
-                label="朝向"
-                name="direction"
+                    label="朝向"
+                    name="direction"
                 >
                     <Radio.Group name="direction" defaultValue={1}>
-                    
                        <Radio value={1}>东</Radio>
                        <Radio value={2}>西</Radio>
                        <Radio value={3}>南</Radio>
@@ -517,8 +535,8 @@ const Room = ()=>{
                 </Form.Item>
 
                 <Form.Item
-                label="近马路吗"
-                name="isClose2Road"
+                    label="近马路吗"
+                    name="isClose2Road"
                 >
                      <Radio.Group name="isClose2Road" defaultValue={true}>                       
                        <Radio value={true}>是</Radio>
@@ -527,8 +545,8 @@ const Room = ()=>{
                 </Form.Item>
 
                 <Form.Item
-                label="有窗吗"
-                name="hasWindow"
+                    label="有窗吗"
+                    name="hasWindow"
                 >
                      <Radio.Group name="hasWindow" defaultValue={true}>
                        <Radio value={true}>是</Radio>
@@ -537,28 +555,28 @@ const Room = ()=>{
                 </Form.Item>
 
                 <Form.Item
-                label="可否吸烟"
-                name="isSmoke"
+                    label="可否吸烟"
+                    name="isSmoke"
                 >
                      <Radio.Group name="isSmoke" defaultValue={true} >
                         <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
+                        <Radio value={false}>否</Radio>
                     </Radio.Group> 
                 </Form.Item>
 
                 <Form.Item
-                label="是否很吵"
-                name="isNoise"
+                    label="是否很吵"
+                    name="isNoise"
                 >
                      <Radio.Group name="isNoise" defaultValue={true} >
                         <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
+                        <Radio value={false}>否</Radio>
                     </Radio.Group> 
                 </Form.Item>
 
                 <Form.Item
-                label="是否很热"
-                name="isHigh"
+                    label="是否很热"
+                    name="isHigh"
                 >
                      <Radio.Group name="isHigh" defaultValue={true} >
                        <Radio value={true}>是</Radio>
@@ -567,10 +585,14 @@ const Room = ()=>{
                 </Form.Item>
 
                 <Form.Item
-                label="房间资产"
-                name="sthintheroom"
+                    label="房间资产"
+                    name="sthintheroom"
                 >
-                     <Input onChange={(ev)=>{setSthIntheroom(ev.target.value)}} placeholder='请输入资产详情' value={sthintheroom}></Input>
+                    <Input 
+                        onChange={(ev)=>{setSthIntheroom(ev.target.value)}} 
+                        placeholder='请输入资产详情' 
+                        value={sthintheroom}
+                    />
                 </Form.Item>
 
                 <Button type='danger' onClick={closeAddDrawer}>取消</Button>
@@ -580,146 +602,172 @@ const Room = ()=>{
             {/* 添加的抽屉 end*/}
 
             {/* 删除的弹出框 start */}
-            <Modal title="温馨提醒" visible={showDelModel} onOk={doDelRoom} onCancel={()=>setShowDelModel(false)} cancelText="取消" okText="确认">
+            <Modal 
+                title="温馨提醒" 
+                visible={showDelModel} 
+                onOk={doDelRoom} 
+                onCancel={()=>setShowDelModel(false)} 
+                cancelText="取消" 
+                okText="确认">
               <p>确定删除所选房间吗？</p>
             </Modal>
             {/* 删除的弹出框 end */}
 
             {/* 编辑的抽屉 start*/}
-            <Drawer className='drawer' title="编辑房间信息" placement="right" onClose={closeEditDrawer} visible={editDrawer}>
-            <Form
-             labelCol={{ span: 6 }}
-             wrapperCol={{ span: 18 }}
-             ref={editRef}
-            >
+            <Drawer 
+                className='drawer' 
+                title="编辑房间信息" 
+                placement="right" 
+                onClose={closeEditDrawer} 
+                visible={editDrawer}>
+                <Form
+                    labelCol={{ span: 6 }}
+                    wrapperCol={{ span: 18 }}
+                    ref={editRef}
+                >
 
-                <Form.Item
-                label="楼栋楼层"
-                name="floor"
-                rules={[{ required: true, message: '请选择楼栋楼层' }]}
-                >
-                    <Cascader  
-                    options={buildIdArr} 
-                    placeholder="请选择楼栋楼层" 
-                    onChange={(value)=>{
-                        console.log('value',value)
-                        setbuildId(value[0])
-                        setFloor(value[1])
-                    }}
-                    ></Cascader>
-                </Form.Item>
-                                      
-                <Form.Item
-                label="房型"
-                name="type"
-                rules={[{ required: true, message: '请选择房型!' }]}
-                >
-                    <Select 
-                        style={{
-                          width: 120,
-                        }}
-                        defaultValue={typeArr&&typeArr[0]}
-                        onChange={(value)=>setType(value)}
+                    <Form.Item
+                        label="楼栋楼层"
+                        name="bandf"
+                        rules={[{ required: true, message: '请选择楼栋楼层' }]}
                     >
-                        {typeArr?.map(item=>(<Option key={item}>{item}</Option>))}
-                    </Select>
-                </Form.Item>
-                
-                <Form.Item
-                label="房间名"
-                name="roomName"
-                rules={[{ required: true, message: '请填写房间名' }]}
-                >
-                    <Input placeholder='请填写房间名' onChange={(ev)=>{setRoomName(ev.target.value)}} value={roomName}></Input>
-                </Form.Item>
-                
-                <Form.Item
-                label="内线电话"
-                name="phone4in"
-                >
-                    <Input placeholder='请输入内线电话' onChange={(ev)=>{setPhone4in(ev.target.value)}} value={phone4in}></Input>
-                </Form.Item>
-                
-                <Form.Item
-                label="外线电话"
-                name="phone4out"
-                >
-                    <Input placeholder='请输入外线电话' onChange={(ev)=>{setPhone4out(ev.target.value)}} value={phone4out}></Input>                 
-                </Form.Item>
-
-                <Form.Item
-                label="朝向"
-                name="direction"
-                >
-                    <Radio.Group name="direction" defaultValue={1}>
+                        <Cascader  
+                            options={ buildIdArr}  
+                            placeholder="请选择楼栋楼层" 
+                            onChange={(value)=>{
+                                console.log('value',value)
+                                setbuildId(value[0])
+                                setFloor(value[1])
+                            }}
+                        />
+                    </Form.Item>
+                                        
+                    <Form.Item
+                        label="房型"
+                        name="type"
+                        rules={[{ required: true, message: '请选择房型!' }]}
+                        initialValues={typeArr&&typeArr[0]}
+                    >
+                        <Select 
+                            style={{
+                            width: 120,
+                            }}
+                            onChange={(value)=>setType(value)}
+                        >
+                            {typeArr?.map(item=>(<Option key={item}>{item}</Option>))}
+                        </Select>
+                    </Form.Item>
                     
-                       <Radio value={1}>东</Radio>
-                       <Radio value={2}>西</Radio>
-                       <Radio value={3}>南</Radio>
-                       <Radio value={4}>北</Radio>
-                    </Radio.Group> 
-                </Form.Item>
+                    <Form.Item
+                        label="房间名"
+                        name="roomName"
+                        rules={[{ required: true, message: '请填写房间名' }]}
+                    >
+                        <Input 
+                            placeholder='请填写房间名' 
+                            onChange={(ev)=>{setRoomName(ev.target.value)}} 
+                            value={roomName}
+                        />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        label="内线电话"
+                        name="phone4in"
+                    >
+                        <Input 
+                            placeholder='请输入内线电话' 
+                            onChange={(ev)=>{setPhone4in(ev.target.value)}} 
+                            value={phone4in}
+                        />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        label="外线电话"
+                        name="phone4out"
+                    >
+                        <Input 
+                            placeholder='请输入外线电话' 
+                            onChange={(ev)=>{setPhone4out(ev.target.value)}} 
+                            value={phone4out}
+                        />                 
+                    </Form.Item>
 
-                <Form.Item
-                label="近马路吗"
-                name="isClose2Road"
-                >
-                     <Radio.Group name="isClose2Road" defaultValue={true}>                       
-                       <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
-                    </Radio.Group> 
-                </Form.Item>
+                    <Form.Item
+                        label="朝向"
+                        name="direction"
+                    >
+                        <Radio.Group name="direction" defaultValue={1}>
+                            <Radio value={1}>东</Radio>
+                            <Radio value={2}>西</Radio>
+                            <Radio value={3}>南</Radio>
+                            <Radio value={4}>北</Radio>
+                        </Radio.Group> 
+                    </Form.Item>
 
-                <Form.Item
-                label="有窗吗"
-                name="hasWindow"
-                >
-                     <Radio.Group name="hasWindow" defaultValue={true}>
-                       <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
-                    </Radio.Group> 
-                </Form.Item>
+                    <Form.Item
+                        label="近马路吗"
+                        name="isClose2Road"
+                    >
+                        <Radio.Group name="isClose2Road" defaultValue={true}>                       
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group> 
+                    </Form.Item>
 
-                <Form.Item
-                label="可否吸烟"
-                name="isSmoke"
-                >
-                     <Radio.Group name="isSmoke" defaultValue={true} >
-                        <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
-                    </Radio.Group> 
-                </Form.Item>
+                    <Form.Item
+                        label="有窗吗"
+                        name="hasWindow"
+                    >
+                        <Radio.Group name="hasWindow" defaultValue={true}>
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group> 
+                    </Form.Item>
 
-                <Form.Item
-                label="是否很吵"
-                name="isNoise"
-                >
-                     <Radio.Group name="isNoise" defaultValue={true} >
-                        <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
-                    </Radio.Group> 
-                </Form.Item>
+                    <Form.Item
+                        label="可否吸烟"
+                        name="isSmoke"
+                    >
+                        <Radio.Group name="isSmoke" defaultValue={true} >
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group> 
+                    </Form.Item>
 
-                <Form.Item
-                label="是否很热"
-                name="isHigh"
-                >
-                     <Radio.Group name="isHigh" defaultValue={true} >
-                       <Radio value={true}>是</Radio>
-                       <Radio value={false}>否</Radio>
-                    </Radio.Group> 
-                </Form.Item>
+                    <Form.Item
+                        label="是否很吵"
+                        name="isNoise"
+                    >
+                        <Radio.Group name="isNoise" defaultValue={true} >
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group> 
+                    </Form.Item>
 
-                <Form.Item
-                label="房间资产"
-                name="sthintheroom"
-                >
-                     <Input onChange={(ev)=>{setSthIntheroom(ev.target.value)}} placeholder='请输入资产详情' value={sthintheroom}></Input>
-                </Form.Item>
+                    <Form.Item
+                        label="是否很热"
+                        name="isHigh"
+                    >
+                        <Radio.Group name="isHigh" defaultValue={true} >
+                            <Radio value={true}>是</Radio>
+                            <Radio value={false}>否</Radio>
+                        </Radio.Group> 
+                    </Form.Item>
+
+                    <Form.Item
+                        label="房间资产"
+                        name="sthintheroom"
+                    >
+                        <Input 
+                            onChange={(ev)=>{setSthIntheroom(ev.target.value)}} 
+                            placeholder='请输入资产详情' 
+                            value={sthintheroom}
+                        />
+                    </Form.Item>
 
                 <Button type='danger' onClick={closeEditDrawer}>取消</Button>
                 <Button type='primary' onClick={doEditRoom}>确认修改</Button>
-            </Form>     
+                </Form>     
             </Drawer>
             {/* 编辑的抽屉 end*/}
 

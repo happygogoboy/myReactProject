@@ -18,6 +18,8 @@ const Roomtype = ()=>{
     useEffect(()=>{
         doGetAllRoomtype()
     },[])
+
+
     //添加房型信息的抽屉相关 start
     const [addDrawer, setaddDrawer] = useState(false);
 
@@ -47,6 +49,7 @@ const Roomtype = ()=>{
       console.log('onOk: ', value);
     };
 
+
     //抽屉表单状态和状态方法的声明
     const [name,setName] = useState(''); 
     const [price,setprice] = useState('');
@@ -67,6 +70,7 @@ const Roomtype = ()=>{
         setbeds('')
     }
     //添加房型信息的抽屉相关 end
+
 
     //执行添加房型 start
     const doAddRoomType = async ()=>{
@@ -89,6 +93,7 @@ const Roomtype = ()=>{
         addRef.current.resetFields()
     } 
     //执行添加房型 end
+
 
     //执行查询所有且table的设置 start
     const [roomTypeList,setRoomTypeList] = useState([])
@@ -114,6 +119,7 @@ const Roomtype = ()=>{
         setRoomTypeList(res.data)
         setTotal(res.count)
     }
+
         //table的设置 start 
     const columns = [
         {
@@ -175,7 +181,9 @@ const Roomtype = ()=>{
           }
     ]
         //table的设置 end 
+
     //执行查询所有且table的设置 end
+
 
     //删除单个房型操作 start
     const [typeId,setTypeId] = useState()
@@ -193,6 +201,7 @@ const Roomtype = ()=>{
         doGetAllRoomtype()
     }
     //删除单个房型操作 end
+
 
     //编辑的操作 start
     const [editDrawer,setEditDrawer] = useState(false)
@@ -246,6 +255,7 @@ const Roomtype = ()=>{
     }
     //编辑的操作 end
     
+
     return (
        
         <div className='roomTypeBox'>
@@ -261,177 +271,273 @@ const Roomtype = ()=>{
                  <Input placeholder='通过价格查询'
                  onChange={(ev)=>setSearchPrice(ev.target.value)}
                  ></Input>
-                 <Button onClick={doGetAllRoomtype}>点击查询</Button>
+                 <Button onClick={doGetAllRoomtype} style={{margin:'0 5px'}}>点击查询</Button>
             </div>
             
+
             {/* 渲染的表格 start*/}
-            <Table columns={columns} dataSource={roomTypeList} 
-            pagination={false} scroll={{y:'500px'}}
+            <Table 
+                columns={columns} 
+                dataSource={roomTypeList} 
+                pagination={false} 
+                scroll={{y:'500px'}}
             />
+
                 {/* 分页器 start */}
-                <Pagination style={{marginTop:'10px'}} defaultCurrent={1} total={total} pageSize={limit} pageSizeOptions={[4, 10, 20, 30]} showSizeChanger
-                onChange={(page,pageSize)=>{
-                    if(page)setPage(page)
-                    setLimit(pageSize)
-                }}
+                <Pagination 
+                    style={{marginTop:'10px'}} 
+                    defaultCurrent={1} total={total} 
+                    pageSize={limit} 
+                    pageSizeOptions={[4, 10, 20, 30]} 
+                    showSizeChanger
+                    showTotal={
+                        (total)=>('总计'+total+'条数据')
+                        }
+                    onChange={(page,pageSize)=>{
+                        if(page)setPage(page)
+                        setLimit(pageSize)
+                    }}
                 />
                 {/* 分页器 end */}
+
             {/* 渲染的表格 end*/}
 
+
             {/* 添加的抽屉 start*/}
-            <Drawer className='drawer' title="添加房型" placement="right" onClose={closeAddDrawer} visible={addDrawer}>
-            <Form
-             labelCol={{ span: 6 }}
-             wrapperCol={{ span: 18 }}
-             ref={addRef}
-            
-            >
+            <Drawer 
+                className='drawer' 
+                title="添加房型" 
+                placement="right" 
+                onClose={closeAddDrawer} 
+                visible={addDrawer}>
 
-                <Form.Item
-                label="房型名称"
-                name="name"
-                rules={[{ required: true, message: '请填写房型!' }]}
+                <Form
+                    labelCol={{ span: 6 }}
+                    wrapperCol={{ span: 18 }}
+                    ref={addRef}
                 >
-                    <Input placeholder='请输入房型' onChange={(ev)=>{setName(ev.target.value)}} value={name} ></Input>
-                </Form.Item>
-                
-                <Form.Item
-                label="价格"
-                name="price"
-                rules={[{ required: true, message: '请填写价格!' }]}
-                >
-                    <Input placeholder='请输入价格' onChange={(ev)=>{setprice(ev.target.value)}} value={price}></Input>
-                </Form.Item>
-                
-                <Form.Item
-                label="押金"
-                name="yaPrice"
-                rules={[{ required: true, message: '请填写价格!' }]}
-                >
-                    <Input placeholder='请输入价格' onChange={(ev)=>{setyaPrice(ev.target.value)}} value={yaPrice}></Input>
-                </Form.Item>
-                
-                <Form.Item
-                label="简称"
-                name="shortName"
-                >
-                    <Input placeholder='请输入简称' onChange={(ev)=>{setshortName(ev.target.value)}} value={shortName}></Input>
-                </Form.Item>
-                
-                <Form.Item
-                label="入住时间"
-                name="liveLimit"
-                >
-                 
-                      <DatePicker   showTime onChange={onLiveChange} onOk={onOk} />
-                  
-                </Form.Item>
 
-                <Form.Item
-                label="开始时间"
-                name="startLimit"
-                >
-                    <Space direction="vertical" size={12}>
-                      <DatePicker showTime onChange={onStartChange} onOk={onOk} />
-                    </Space>
-                </Form.Item>
+                    <Form.Item
+                        label="房型名称"
+                        name="name"
+                        rules={[{ required: true, message: '请填写房型!' }]}
+                    >
+                        <Input 
+                            placeholder='请输入房型' 
+                            onChange={(ev)=>{setName(ev.target.value)}} 
+                            value={name} 
+                        />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        label="价格"
+                        name="price"
+                        rules={[{ required: true, message: '请填写价格!' }]}
+                    >
+                        <Input 
+                            placeholder='请输入价格' 
+                            onChange={(ev)=>{setprice(ev.target.value)}} 
+                            value={price}
+                        />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        label="押金"
+                        name="yaPrice"
+                        rules={[{ required: true, message: '请填写价格!' }]}
+                    >
+                        <Input 
+                            placeholder='请输入价格' 
+                            onChange={(ev)=>{setyaPrice(ev.target.value)}} 
+                            value={yaPrice}
+                        />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        label="简称"
+                        name="shortName"
+                    >
+                        <Input 
+                            placeholder='请输入简称' 
+                            onChange={(ev)=>{setshortName(ev.target.value)}} 
+                            value={shortName}
+                        />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        label="入住时间"
+                        name="liveLimit"
+                    >
+                        <DatePicker   
+                            showTime 
+                            onChange={onLiveChange} 
+                            onOk={onOk} 
+                        />
+                    </Form.Item>
 
-                <Form.Item
-                label="枕头数"
-                name="couponNum"
-                >
-                    <Input onChange={(ev)=>{setcouponNum(ev.target.value)}} placeholder='请输入详情' value={couponNum}></Input>
-                </Form.Item>
+                    <Form.Item
+                        label="开始时间"
+                        name="startLimit"
+                    >
+                        <Space 
+                            direction="vertical" 
+                            size={12}>
+                            <DatePicker 
+                                showTime 
+                                onChange={onStartChange} 
+                                onOk={onOk} 
+                            />
+                        </Space>
+                    </Form.Item>
 
-                <Form.Item
-                label="床数"
-                name="beds"
-                >
-                    <Input onChange={(ev)=>{setbeds(ev.target.value)}} placeholder='请输入详情' value={beds}></Input>
-                </Form.Item>
+                    <Form.Item
+                        label="枕头数"
+                        name="couponNum"
+                    >
+                        <Input 
+                            onChange={(ev)=>{setcouponNum(ev.target.value)}} 
+                            placeholder='请输入详情' 
+                            value={couponNum}
+                        />
+                    </Form.Item>
 
-                <Button type='danger' onClick={closeAddDrawer}>取消</Button>
-                <Button type='primary' onClick={doAddRoomType}>确认添加</Button>
-            </Form>     
+                    <Form.Item
+                        label="床数"
+                        name="beds"
+                    >
+                        <Input 
+                            onChange={(ev)=>{setbeds(ev.target.value)}} 
+                            placeholder='请输入详情' 
+                            value={beds}
+                        />
+                    </Form.Item>
+
+                    <Button type='danger' onClick={closeAddDrawer}>取消</Button>
+                    <Button type='primary' onClick={doAddRoomType}>确认添加</Button>
+                </Form>     
             </Drawer>
             {/* 添加的抽屉 end*/}
 
+
             {/* 删除的弹出框 start */}
-            <Modal title="温馨提醒" visible={showDelModel} onOk={doDelRoomtype} onCancel={()=>setShowDelModel(false)} cancelText="取消" okText="确认">
-              <p>确定删除所选房型吗？</p>
+            <Modal 
+                title="温馨提醒" 
+                visible={showDelModel} 
+                onOk={doDelRoomtype} 
+                onCancel={()=>setShowDelModel(false)} 
+                cancelText="取消" 
+                okText="确认">
+                <p>确定删除所选房型吗？</p>
             </Modal>
             {/* 删除的弹出框 end */}
 
+
             {/* 编辑的抽屉 start*/}
-            <Drawer className='drawer' title="编辑房型" placement="right" onClose={closeEditDrawer} visible={editDrawer}>
+            <Drawer 
+                className='drawer' 
+                title="编辑房型" 
+                placement="right" 
+                onClose={closeEditDrawer} 
+                visible={editDrawer}>
             <Form
-             labelCol={{ span: 6 }}
-             wrapperCol={{ span: 18 }}
-             ref={editRef}
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                ref={editRef}
             >
 
                 <Form.Item
-                label="房型名称"
-                name="name"
-                rules={[{ required: true, message: '请填写房型!' }]}
+                    label="房型名称"
+                    name="name"
+                    rules={[{ required: true, message: '请填写房型!' }]}
                 
                 >
-                    <Input placeholder='请输入房型' onChange={(ev)=>{setName(ev.target.value)}} value={name}></Input>
+                    <Input 
+                        placeholder='请输入房型' 
+                        onChange={(ev)=>{setName(ev.target.value)}} 
+                        value={name}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                label="价格"
-                name="price"
-                rules={[{ required: true, message: '请填写价格!' }]}
+                    label="价格"
+                    name="price"
+                    rules={[{ required: true, message: '请填写价格!' }]}
                 >
-                    <Input placeholder='请输入价格' onChange={(ev)=>{setprice(ev.target.value)}} value={price}></Input>
+                    <Input 
+                        placeholder='请输入价格' 
+                        onChange={(ev)=>{setprice(ev.target.value)}} 
+                        value={price}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                label="押金"
-                name="yaPrice"
-                rules={[{ required: true, message: '请填写价格!' }]}
+                    label="押金"
+                    name="yaPrice"
+                    rules={[{ required: true, message: '请填写价格!' }]}
                 >
-                    <Input placeholder='请输入价格' onChange={(ev)=>{setyaPrice(ev.target.value)}} value={yaPrice}></Input>
+                    <Input 
+                        placeholder='请输入价格' 
+                        onChange={(ev)=>{setyaPrice(ev.target.value)}} 
+                        value={yaPrice}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                label="简称"
-                name="shortName"
+                    label="简称"
+                    name="shortName"
                 >
-                    <Input placeholder='请输入简称' onChange={(ev)=>{setshortName(ev.target.value)}} value={shortName}></Input>
+                    <Input 
+                        placeholder='请输入简称' 
+                        onChange={(ev)=>{setshortName(ev.target.value)}} 
+                        value={shortName}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                label="入住时间"
-                name="liveLimit"
+                    label="入住时间"
+                    name="liveLimit"
                 >
                     <Space direction="vertical" size={12}>
-                      <DatePicker showTime onChange={onLiveChange} onOk={onOk}/>
+                      <DatePicker 
+                        showTime 
+                        onChange={onLiveChange} 
+                        onOk={onOk}
+                        />
                     </Space>
                 </Form.Item>
 
                 <Form.Item
-                label="开始时间"
-                name="startLimit"
+                    label="开始时间"
+                    name="startLimit"
                 >
                     <Space direction="vertical" size={12}>
-                      <DatePicker showTime onChange={onStartChange} onOk={onOk} />
+                      <DatePicker 
+                        showTime 
+                        onChange={onStartChange} 
+                        onOk={onOk} />
                     </Space>
                 </Form.Item>
 
                 <Form.Item
-                label="枕头数"
-                name="couponNum"
+                    label="枕头数"
+                    name="couponNum"
                 >
-                    <Input onChange={(ev)=>{setcouponNum(ev.target.value)}} placeholder='请输入详情' value={couponNum}></Input>
+                    <Input 
+                        onChange={(ev)=>{setcouponNum(ev.target.value)}} 
+                        placeholder='请输入详情' 
+                        value={couponNum}
+                    />
                 </Form.Item>
 
                 <Form.Item
-                label="床数"
-                name="beds"
+                    label="床数"
+                    name="beds"
                 >
-                    <Input onChange={(ev)=>{setbeds(ev.target.value)}} placeholder='请输入详情' value={beds}></Input>
+                    <Input 
+                        onChange={(ev)=>{setbeds(ev.target.value)}} 
+                        placeholder='请输入详情' 
+                        value={beds}
+                    />
                 </Form.Item>
 
                 <Button type='danger' onClick={closeEditDrawer}>取消</Button>
