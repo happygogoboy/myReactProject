@@ -205,6 +205,7 @@ const SetBuild = ()=>{
             <div className='addFloofBox'>
             {curBuild.floorInfo?.map((item,index)=>(
             <div
+                key={index}
                 onClick={()=>{
                     setSelectIndex(index+1)
                     console.log(index);

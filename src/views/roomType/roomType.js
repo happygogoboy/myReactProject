@@ -74,6 +74,9 @@ const Roomtype = ()=>{
 
     //执行添加房型 start
     const doAddRoomType = async ()=>{
+        const ifOk = await addRef.current.validateFields()
+        console.log(ifOk,'ifOk');
+        if(!ifOk) return 
         let res = await addRoomtype({
             name,
             price,
@@ -126,46 +129,55 @@ const Roomtype = ()=>{
           title: '房型名称',
           dataIndex: 'name',
           key: 'name',
+          rowKey:'name'
         },
         {
           title: '价格',
           dataIndex: 'price',
           key: 'price',
+          rowKey:'price'
         },
         {
           title: '押金',
           dataIndex: 'yaPrice',
           key: 'yaPrice',
+          rowKey:'yaPrice'
         },
         {
           title: '简称',
           dataIndex: 'shortName',
           key: 'shortName',
+          rowKey:'shortName'
         },
         {
           title: '入住时间',
           dataIndex: 'liveLimit',
           key: 'liveLimit',
+          rowKey:'liveLimit'
         },
         {
           title: '开始时间',
           dataIndex: 'startLimit',
           key: 'startLimit',
+          rowKey:'startLimit'
         },
         {
           title: '枕头数',
           dataIndex: 'couponNum',
           key: 'couponNum',
+          rowKey:'couponNum'
         },
         {
           title: '床数',
           dataIndex: 'beds',
           key: 'beds',
+          rowKey:'beds'
         },
         {
           title: '操作',
           dataIndex: 'handle',
           key: 'handle',
+          rowKey:'handle',
           render:(_,record)=>(
                 <div>
                     <Button type='danger' size="small" style={{marginRight:'5px'}}  onClick={()=>{
@@ -234,6 +246,9 @@ const Roomtype = ()=>{
        
     }
     const doEditRoomtype = async ()=>{
+        const ifOk = await editRef.current.validateFields()
+        console.log(ifOk,'ifOk');
+        if(!ifOk) return 
         let res = await editRoomtype(
             {
                 typeid:typeId,
@@ -277,6 +292,7 @@ const Roomtype = ()=>{
 
             {/* 渲染的表格 start*/}
             <Table 
+                rowKey={record => record._id}
                 columns={columns} 
                 dataSource={roomTypeList} 
                 pagination={false} 

@@ -143,11 +143,13 @@ const Room = ()=>{
 
     
     const doAddRoom = async ()=>{
-        
+        const ifOk = await addForm.current.validateFields()
+        console.log(ifOk,'ifOk');
+        if(!ifOk) return 
         const values = addForm.current.getFieldsValue(true);
         console.log(values)
         const {bandf,...postData} = values
-        const [builiId,floor] = bandf
+        const [buildId,floor] = bandf
         let res = await addRoom({
             isHigh,
             isNoise,
@@ -156,7 +158,7 @@ const Room = ()=>{
             isClose2Road,
             direction,
             type,
-            builiId,
+            buildId,
             floor,
             ...postData
         })
@@ -199,8 +201,17 @@ const Room = ()=>{
         setRoomList(res.data)
         setTotal(res.count)
     }
+
+    useEffect(()=>{
+        console.log('Roomlist',roomList);
+    },[roomList])
         //table的设置 start 
     const columns = [
+        {
+            title: '楼栋',
+            dataIndex: 'buildId',
+            key: 'buildId',
+          },
         {
           title: '楼层',
           dataIndex: 'floor',
@@ -348,20 +359,20 @@ const Room = ()=>{
       
         setEditDrawer(true)
         setId(record._id)
-        setTimeout(()=>{
-            console.log('rrrrr',record)
-            editRef.current.setFieldsValue({
-                ...record,
-                bandf:[record.buildId,record.floor]
-            })           
-        },300)
+        console.log('rrrrr',record)
+        editRef.current.setFieldsValue({
+            ...record,
+            bandf:[record.buildId,record.floor]
+        })           
        
     }
     
     //发送编辑请求执行编辑操作
 
     const doEditRoom = async ()=>{
-
+        const ifOk = await editRef.current.validateFields()
+        console.log(ifOk,'ifOk');
+        if(!ifOk) return 
         const values = editRef.current.getFieldsValue(true)
         console.log('values,values++++++++++++++',values);
         const {bandf,...postData} = values
@@ -421,6 +432,7 @@ const Room = ()=>{
             
             {/* 渲染的表格 start*/}
             <Table 
+                rowKey={record => record._id}
                 columns={columns} 
                 dataSource={roomList} 
                 pagination={false} 
@@ -615,6 +627,7 @@ const Room = ()=>{
 
             {/* 编辑的抽屉 start*/}
             <Drawer 
+                forceRender
                 className='drawer' 
                 title="编辑房间信息" 
                 placement="right" 
